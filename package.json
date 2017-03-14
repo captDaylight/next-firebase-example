@@ -1,0 +1,25 @@
+{
+  "name": "next-firebase-example",
+  "version": "1.0.0",
+  "description": "authenticate using next and firebase",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/captDaylight/next-firebase-example.git"
+  },
+  "keywords": [
+    "next",
+    "firebase",
+    "zeit",
+    "authentication"
+  ],
+  "author": "paul christophe @captDaylight <paul@neondaylight.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/captDaylight/next-firebase-example/issues"
+  },
+  "homepage": "https://github.com/captDaylight/next-firebase-example#readme"
+}
