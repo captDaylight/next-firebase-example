@@ -4,7 +4,9 @@
   "description": "authenticate using next and firebase",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
   },
   "repository": {
     "type": "git",
@@ -21,5 +23,10 @@
   "bugs": {
     "url": "https://github.com/captDaylight/next-firebase-example/issues"
   },
-  "homepage": "https://github.com/captDaylight/next-firebase-example#readme"
+  "homepage": "https://github.com/captDaylight/next-firebase-example#readme",
+  "dependencies": {
+    "next": "^1.2.3",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  }
 }
