@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { initializeApp, auth } from 'firebase';
+import { initializeApp, auth, database } from 'firebase';
+
 const provider = new auth.GoogleAuthProvider();
 
 try {
@@ -8,13 +9,21 @@ try {
     authDomain: 'log-me-in-b7816.firebaseapp.com',
     databaseURL: 'https://log-me-in-b7816.firebaseio.com',
     storageBucket: 'log-me-in-b7816.appspot.com',
-    messagingSenderId: '858560226265'
+    messagingSenderId: '858560226265',
   });
-} catch(err) {
+} catch (err) {
   // taken from https://github.com/now-examples/next-news/blob/master/lib/db.js
   if (!/already exists/.test(err.message)) {
     console.error('Firebase initialization error', err.stack)
   }
+}
+
+function login() {
+  auth().signInWithPopup(provider);
+}
+
+function logout() {
+  auth().signOut();
 }
 
 export default class Index extends PureComponent {
@@ -23,52 +32,58 @@ export default class Index extends PureComponent {
     this.state = {
       user: auth().currentUser,
       value: '',
+      messages: {},
     };
-    this._login = this._login.bind(this);
-    this._logout = this._logout.bind(this);
-    this._updateUserState = this._updateUserState.bind(this);
-    this._handleChange = this._handleChange.bind(this);
-    this._handleSubmit = this._handleSubmit.bind(this);
-    auth().onAuthStateChanged(this._updateUserState);
+    this.updateUserState = this.updateUserState.bind(this);
+    this.updateMessages = this.updateMessages.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    auth().onAuthStateChanged(this.updateUserState);
+    this.messagesRef = database().ref('messages');
+    this.messagesRef.on('value', snap => this.updateMessages(snap.val()));
   }
 
-  _login() {
-    auth().signInWithPopup(provider);
-  }
-
-  _logout() {
-    auth().signOut();
-  }
-
-  _updateUserState(user) {
+  updateUserState(user) {
     this.setState({ user });
   }
 
-  _handleChange(e) {
-    this.setState({value: e.target.value});
+  updateMessages(messages) {
+    this.setState({ messages });
   }
 
-  _handleSubmit(e) {
-    event.preventDefault();
-    console.log('A name was submitted: ' + this.state.value);
+  handleChange(e) {
+    this.setState({ value: e.target.value });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    const { value } = this.state;
+    database().ref('messages').push({ text: value });
+    this.setState({ value: '' });
   }
 
   render() {
-    const { user, value } = this.state;
+    const { user, value, messages } = this.state;
     return (
       <div>
         {
           user
-          ? <div onClick={this._logout}>Sign out</div>
-          : <div onClick={this._login}>Log In/Sign up</div>
+          ? <div onClick={logout}>Sign out</div>
+          : <div onClick={login}>Log In/Sign up</div>
         }
         {
           user &&
           <div>
-            <form onSubmit={this._handleSubmit}>
-              <input type="text" onChange={this._handleChange} value={value} />
+            <form onSubmit={this.handleSubmit}>
+              <input type="text" onChange={this.handleChange} value={value} />
             </form>
-            <ul></ul>
+            <ul>
+              {
+                Object.keys(messages).map(key => (
+                  <li key={key}>{messages[key].text}</li>
+                ))
+              }
+            </ul>
           </div>
         }
       </div>
